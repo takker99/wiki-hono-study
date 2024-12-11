@@ -1,117 +1,85 @@
-import hasDom from "has-dom";
+export interface Route {
+  wiki: Wiki;
+  title?: Title;
+}
 
-export const defaultRoute = { wiki: "general", title: "hello" };
-
-export function buildPath({ wiki, title }) {
+export function buildPath(
+  { wiki, title }: Route,
+): `/${Wiki}/${Title}` | `/${Wiki}` {
   if (wiki && title) return `/${wiki}/${title}`;
-  if (wiki) return `/${wiki}`;
-  throw new Error(`invalid route /${wiki}/${title}`);
+  return `/${wiki}`;
 }
 
-export function parseRoute(path) {
-  if (!path && hasDom()) {
-    path = location.href.replace(new RegExp("^" + location.origin), "");
-  }
-  path = decodeURIComponent(path);
-  const route = {};
-  const m = path.match(/^\/([^\/]+)\/?$/) || path.match(/^\/([^\/]+)\/(.+)/);
-  if (m) {
-    if (validateWiki(m[1]).valid) route.wiki = m[1];
-    if (validateTitle(m[2]).valid) route.title = m[2];
-  }
-  return route;
-}
+export const parseRoute = (
+  path?: `/${string}/${string}` | `/${string}`,
+): Route => {
+  const [wiki, ...titleParts] = decodeURIComponent(path ?? currentPathname())
+    .slice(1).split("/");
+  const title = titleParts.join("/");
+  if (!title) return { wiki: validateWiki(wiki) };
+  return { wiki: validateWiki(wiki), title: validateTitle(title) };
+};
 
-class ValidationResult {
-  constructor(errors = []) {
-    this.errors = [];
+const currentPathname = () => {
+  const pathname = location.pathname;
+  if (pathname.startsWith("/")) {
+    throw new Error("pathname should start with '/'");
   }
-  get valid() {
-    return this.errors.length < 1;
-  }
-  get invalid() {
-    return !this.valid;
-  }
-}
+  return pathname as `/${string}`;
+};
 
 const blacklist = ["auth", "login", "logout", "config", "api", "slide"];
 
-// common rules for wiki & title
-export function validateName(name) {
-  const result = new ValidationResult();
+declare const tag: unique symbol;
+export type Branded<T, Tag> = T & { [tag]: Tag };
+export type Name = Branded<string, "Name">;
 
-  if (typeof name !== "string") {
-    result.errors.push("name must be a String");
-    return result;
-  }
+/** common rules for wiki & title */
+export function validateName(name: string): Name {
+  if (name.length < 1) throw new Error("name is empty");
 
-  if (name.length < 1) {
-    result.errors.push("name is empty");
-  }
+  if (name.length > 64) throw new Error("name is too long");
 
-  if (name.length > 64) {
-    result.errors.push("name is too long");
-  }
-
-  for (let s of blacklist) {
-    if (name.toLowerCase() === s) {
-      result.errors.push(`"${name}" is reserved for system`);
-    }
+  if (blacklist.includes(name.toLowerCase())) {
+    throw new Error(`"${name}" is reserved for system`);
   }
 
   if (name.trim() !== name) {
-    result.errors.push("name cannot have space at head or tail.");
+    throw new Error("name cannot have space at head or tail");
   }
 
-  for (let c of "#\n\r") {
-    if (name.indexOf(c) > -1) {
-      result.errors.push(`name cannot contain "${c}"`);
-    }
+  for (const c of "#\n\r") {
+    if (name.includes(c)) throw new Error(`name cannot contain "${c}"`);
   }
 
-  if (/::/.test(name)) {
-    result.errors.push(`name cannot contain "::"`);
+  if (name.includes("::")) throw new Error(`name cannot contain "::"`);
+
+  if (decodeURIComponent(name) !== name) {
+    throw new Error("name cannot contain URI encoded char");
   }
 
-  try {
-    if (decodeURIComponent(name) !== name) {
-      result.errors.push("name cannot contain URI encoded char");
-    }
-  } catch (err) {
-    result.errors.push(err.message);
-  }
-
-  return result;
+  return name as Name;
 }
 
-// validate page name
-export function validateTitle(name) {
+export type Title = Branded<string, "Title">;
+/** validate page name */
+export const validateTitle = (name: string): Title =>
+  validateName(name) as string as Title;
+
+export type Wiki = Branded<string, "Wiki">;
+/** validate wiki name */
+export function validateWiki(name: string): Wiki {
   const result = validateName(name);
-  if (!result.valid) return result;
+  if (result.startsWith("/")) throw new Error("wiki cannot start with '/'");
 
-  return result;
-}
-
-// validate wiki name
-export function validateWiki(name) {
-  const result = validateName(name);
-  if (!result.valid) return result;
-
-  if (/^\//.test(name)) {
-    result.errors.push(`wiki cannot start with "/"`);
+  for (const c of "/:") {
+    if (name.includes(c)) throw new Error(`wiki cannot contain "${c}"`);
   }
 
-  for (let c of "/:") {
-    if (name.indexOf(c) > -1) {
-      result.errors.push(`wiki cannot contain "${c}"`);
-    }
-  }
-
-  return result;
+  return result as string as Wiki;
 }
 
-export function validateRoute({ wiki, title }) {
-  const result = validateWiki(wiki);
-  result.errors.push(...validateTitle(title).errors);
-  return result;
-}
+export const defaultRoute: Route = /*#__PURE__*/ {
+  wiki: validateWiki("general"),
+  title: validateTitle("hello"),
+};

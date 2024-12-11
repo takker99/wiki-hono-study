@@ -1,40 +1,32 @@
-import React from "react";
-import StoreComponent from "./store-component";
-import hasDom from "has-dom";
+import type { FunctionComponent } from "preact";
+import { useCallback } from "preact/hooks";
+import { Route } from "../../share/route.ts";
 
-export default class EditTool extends StoreComponent {
-  constructor() {
-    super();
-    this.createNewPage = this.createNewPage.bind(this);
-  }
-
-  createNewPage(e) {
+export const EditTool: FunctionComponent<{ route: Route }> = ({ route }) => {
+  const createNewPage = useCallback((e: MouseEvent) => {
     e.preventDefault();
     const title = globalThis.prompt("create new page");
     if (!title) return;
-    this.action.route({ title });
-  }
+    // Assuming `action` is available in the context or props
+    action.route({ title });
+  }, []);
 
-  render() {
-    if (!hasDom()) return null;
-    const { wiki, title } = this.state.page;
-    return (
-      <div className="edit-tool">
-        <ul>
-          <li>
-            <span onClick={this.createNewPage} className="button">
-              new page
-            </span>
-          </li>
-          <li>
-            <span className="button">
-              <a href={`/api/text/${wiki}/${title}`}>
-                text
-              </a>
-            </span>
-          </li>
-        </ul>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="edit-tool">
+      <ul>
+        <li>
+          <span onClick={createNewPage} className="button">
+            new page
+          </span>
+        </li>
+        <li>
+          <span className="button">
+            <a href={`/api/text/${route.wiki}/${route.title}`}>
+              text
+            </a>
+          </span>
+        </li>
+      </ul>
+    </div>
+  );
+};

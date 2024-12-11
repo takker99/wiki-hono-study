@@ -1,65 +1,66 @@
 import React from "react";
+import * as actions from "../action.ts";
+
+import { h } from "preact";
+import { useEffect, useState } from "preact/hooks";
 import { bindActionCreators } from "redux";
-import * as actions from "../action/";
-import Debug from "debug";
+import * as actions from "../action.ts";
 
-export default class StoreComponent extends React.Component {
-  static get propTypes() {
-    return {
-      store: React.PropTypes.object.isRequired,
+export interface StoreComponentProps {
+  store: any; // You should replace `any` with the specific type of your store
+}
+
+const StoreComponent = ({ store }: StoreComponentProps) => {
+  const [state, setState] = useState(store.getState());
+  const debug = Debug("semirara:component:storecomponent");
+
+  useEffect(() => {
+    debug("componentDidMount()");
+    const unsubscribeStore = store.subscribe(() => {
+      setState(store.getState());
+    });
+
+    return () => {
+      debug("componentWillUnmount()");
+      unsubscribeStore();
     };
-  }
+  }, [store]);
 
-  mapState(state) {
-    return state;
-  }
+  const mapState = (state: any) => state; // Replace `any` with the specific type of your state
 
-  shouldComponentUpdate(nextProps, nextState) {
+  const shouldComponentUpdate = (nextProps: StoreComponentProps, nextState: any) => {
     if (
-      Object.keys(nextProps).length !== Object.keys(this.props).length ||
-      Object.keys(nextState).length !== Object.keys(this.state).length
+      Object.keys(nextProps).length !== Object.keys(store).length ||
+      Object.keys(nextState).length !== Object.keys(state).length
     ) return true;
-    for (let k in nextState) {
+    for (const k in nextState) {
       if (
         typeof nextState[k] === "object" ||
-        this.state[k] !== nextState[k]
+        state[k] !== nextState[k]
       ) return true;
     }
-    for (let k in nextProps) {
+    for (const k in nextProps) {
       if (
         k !== "store" &&
           typeof nextProps[k] === "object" ||
-        this.props[k] !== nextProps[k]
+        store[k] !== nextProps[k]
       ) return true;
     }
     return false;
-  }
+  };
 
-  componentWillUnmount() {
-    this.debug("componentWillUnmount()");
-    this.unsubscribeStore();
-  }
+  useEffect(() => {
+    debug("componentWillMount()");
+    setState(mapState(store.getState()));
+    const action = bindActionCreators(actions, store.dispatch);
+  }, [store]);
 
-  componentDidMount() {
-    this.debug("componentDidMount()");
-    this.unsubscribeStore = this.store.subscribe(() => {
-      this.setState(this.mapState(this.store.getState()));
-    });
-  }
+  return (
+    <div>
+      {/* Render your component here */}
+    </div>
+  );
+};
+};
 
-  componentWillMount() {
-    this.debug("componentWillMount()");
-    this.store = this.props.store;
-    this.setState(this.mapState(this.store.getState()));
-    this.action = bindActionCreators(actions, this.store.dispatch);
-  }
-
-  constructor() {
-    super();
-    this.state = {};
-    this.debug = Debug(
-      "semirara:component:" + this.constructor.name.toLowerCase(),
-    );
-    this.debug("constructor()");
-  }
-}
+export default StoreComponent;

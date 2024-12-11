@@ -10,6 +10,7 @@
   ],
   "imports": {
     "@progfay/scrapbox-parser": "jsr:@progfay/scrapbox-parser@^9.2.0",
+    "@std/datetime": "jsr:@std/datetime@^0.225.2",
     "hast-util-to-jsx-runtime": "npm:hast-util-to-jsx-runtime@^2.3.2",
     "lowlight": "npm:lowlight@^3.2.0",
     "preact": "npm:preact@10",

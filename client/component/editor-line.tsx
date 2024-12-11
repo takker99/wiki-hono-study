@@ -1,23 +1,20 @@
-import type { FunctionComponent } from "preact";
-import { useEffect, useRef } from "preact/hooks";
-
-import LongPress from "./longpress.tsx";
-import UserIcon from "./usericon.tsx";
-import {Code, getFullLanguage } from "./code.tsx";
-
-import { findDOMNode } from "react-dom";
-import classnames from "classnames";
+import type { FunctionComponent, h } from "preact";
+import { useCallback } from "preact/hooks";
+import { LongPress } from "./LongPress.tsx";
+import { Code } from "./code.tsx";
+import { CommandLineNode } from "@progfay/scrapbox-parser";
+import { ParsedCodeBlockStart, SplitedPage } from "../../splitLines.ts";
+import { ParsedCodeBlockBody } from "../../splitLines.ts";
 
 export const EditorLine: FunctionComponent<{
-  line: any;
+  line: SplitedPage<{}, true>[number];
   compiler: any;
-  edit: any;
-  onStartEdit: any;
-  onChange: any;
-  onKeyDown: any;
-  onPaste: any;
-  key: any;
-}>= ({
+  edit: boolean;
+  onStartEdit: () => void;
+  onChange: (value: string) => void;
+  onKeyDown: h.JSX.KeyboardEventHandler<HTMLInputElement>;
+  onPaste: (e: ClipboardEvent) => void;
+}> = ({
   line,
   compiler,
   edit,
@@ -27,101 +24,111 @@ export const EditorLine: FunctionComponent<{
   onPaste,
   key,
 }) => {
-  const inputRef = useRef(null);
+  if (edit) {
+    return (
+      <Edit
+        key={key}
+        line={line}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        onPaste={onPaste}
+      />
+    );
+  }
+  switch (line.type) {
+    case "line":
+      return renderLine({ line, onStartEdit });
+    case "title":
+      return renderTitle({ line, onStartEdit });
+    case "table-head":
+      return renderTableHead({ line, onStartEdit });
+    case "table-body":
+      return renderTableBody({ line, onStartEdit });
+    case "code-head":
+      return <CodeBlockStart line={line} onStartEdit={onStartEdit} />;
+    case "code-body":
+      return <CodeBlockBody line={line} onStartEdit={onStartEdit} />;
+  }
+};
 
-  useEffect(() => {
-    if (edit) {
-      findDOMNode(inputRef.current).focus();
-    }
-  }, [edit]);
+const CodeBlockStart: FunctionComponent<
+  { line: ParsedCodeBlockStart<{}>; onStartEdit: () => void }
+> = (
+  { key, line, onStartEdit },
+) => {
+  const { indent, fileName } = line;
+  return (
+    <li key={key} style={{ marginLeft: indent * 20 }}>
+      <LongPress onLongPress={onStartEdit}>
+        <span className="code-block-start">{fileName}</span>
+      </LongPress>
+    </li>
+  );
+};
+const CodeBlockBody: FunctionComponent<
+  { line: ParsedCodeBlockBody<{}>; onStartEdit: () => void }
+> = (
+  { key, line, onStartEdit },
+) => {
+  const { indent, text, fileName } = line;
+  return (
+    <li key={key}>
+      <LongPress onLongPress={onStartEdit}>
+        <span
+          className="code-block"
+          style={{
+            marginLeft: indent * 20 - 5,
+            paddingLeft: (indent - indent) * 20 + 5,
+          }}
+        >
+          <Code lang={fileName}>{text}</Code>
+        </span>
+      </LongPress>
+    </li>
+  );
+};
 
-  const renderEdit = () => {
-    let input = (
+const Edit: FunctionComponent<{
+  line: SplitedPage<{}, true>[number];
+  onChange: (value: string) => void;
+  onKeyDown: h.JSX.KeyboardEventHandler<HTMLInputElement>;
+  onPaste: (e: ClipboardEvent) => void;
+}> = (
+  { key, line, onChange, onKeyDown, onPaste },
+) => {
+  const handleChange = useCallback(
+    (e: h.JSX.TargetedEvent<HTMLInputElement, Event>) =>
+      onChange(e.currentTarget.value),
+    [onChange],
+  );
+  const stopPropagation = useCallback(
+    (e: Event) => e.stopPropagation(),
+    [],
+  );
+
+  return (
+    <li key={key} style={{ marginLeft: line.indent * 20 }}>
       <input
-        ref={inputRef}
-        value={line.value}
-        onChange={(e) => onChange(e.target.value)}
-        onClick={(e) => e.stopPropagation()}
+        value={line.raw}
+        onChange={handleChange}
+        onClick={stopPropagation}
         onKeyDown={onKeyDown}
         onPasteCapture={onPaste}
       />
-    );
-    if (line.blocktitle && !line.codeblock && !line.cli) {
-      input = <h3>{input}</h3>;
-    }
-    return <li key={key} style={{ marginLeft: line.indent * 20 }}>{input}</li>;
-  };
-
-  const renderCodeBlock = () => {
-    const { lang, start, filename, indent } = line.codeblock;
-    if (start) {
-      return (
-        <li key={key} style={{ marginLeft: line.indent * 20 }}>
-          <LongPress onLongPress={onStartEdit}>
-            <span className="codeblock-start">
-              {filename || getFullLanguage(lang) || lang}
-            </span>
-          </LongPress>
-        </li>
-      );
-    } else {
-      let className = classnames({
-        codeblock: !line.codeblock.end,
-        "codeblock-end": line.codeblock.end,
-      });
-      return (
-        <li key={key}>
-          <LongPress onLongPress={onStartEdit}>
-            <span
-              className={className}
-              style={{
-                marginLeft: indent * 20 - 5,
-                paddingLeft: (line.indent - indent) * 20 + 5,
-              }}
-            >
-              <Code lang={lang}>{line.value}</Code>
-            </span>
-          </LongPress>
-        </li>
-      );
-    }
-  };
-
-  const renderCli = () => {
-    return (
-      <li key={key} style={{ marginLeft: line.indent * 20 }}>
-        <LongPress onLongPress={onStartEdit}>
-          <span className="cli">
-            <span className="prefix">{line.cli.prefix}</span>{" "}
-            <span>{line.cli.command}</span>
-          </span>
-        </LongPress>
-      </li>
-    );
-  };
-
-  const renderDefault = () => {
-    const icon = line.showUserIcon ? <UserIcon id={line.user} size={20} /> : null;
-    let value = line.value;
-    if (line.numberList) value = line.numberList.prefix + value;
-    let elm = (
-      <span>
-        <LongPress onLongPress={onStartEdit}>
-          {compiler(value)}
-        </LongPress>
-        {icon}
-      </span>
-    );
-    if (line.blocktitle) elm = <h3>{elm}</h3>;
-    return (
-      <li key={key} style={{ marginLeft: line.indent * 20 }}>
-        {elm}
-      </li>
-    );
-  };
-
-  if (edit) return renderEdit();
-  if (line.codeblock) return renderCodeBlock();
-  if (line.cli) return renderCli();
-  return renderDefault();
+    </li>
+  );
 };
+
+const renderCli: FunctionComponent<
+  { cli: CommandLineNode; indent: number; onStartEdit: () => void }
+> = (
+  { key, indent, cli, onStartEdit },
+) => (
+  <li key={key} style={{ marginLeft: indent * 20 }}>
+    <LongPress onLongPress={onStartEdit}>
+      <span className="cli">
+        <span className="prefix">{cli.prefix}</span> <span>{cli.command}</span>
+      </span>
+    </LongPress>
+  </li>
+);

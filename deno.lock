@@ -2,6 +2,7 @@
   "version": "4",
   "specifiers": {
     "jsr:@progfay/scrapbox-parser@^9.2.0": "9.2.0",
+    "jsr:@std/datetime@~0.225.2": "0.225.2",
     "npm:@types/node@*": "22.5.4",
     "npm:hast-util-to-jsx-runtime@^2.3.2": "2.3.2",
     "npm:lowlight@^3.2.0": "3.2.0",
@@ -10,6 +11,9 @@
   "jsr": {
     "@progfay/scrapbox-parser@9.2.0": {
       "integrity": "82ebb95e72dd0ea44547fd48e2bcb479fd2275fc26c4515598f742e5aaf6e0e5"
+    },
+    "@std/datetime@0.225.2": {
+      "integrity": "45f0100554a912cd65f48089ef0a33aa1eb6ea21f08090840b539ab582827eaa"
     }
   },
   "npm": {
@@ -496,6 +500,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@progfay/scrapbox-parser@^9.2.0",
+      "jsr:@std/datetime@~0.225.2",
       "npm:hast-util-to-jsx-runtime@^2.3.2",
       "npm:lowlight@^3.2.0",
       "npm:preact@10"

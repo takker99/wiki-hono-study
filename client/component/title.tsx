@@ -1,8 +1,4 @@
-import React from "react";
-import { findDOMNode } from "react-dom";
-
-import StoreComponent from "./store-component";
-import LongPress from "./longpress";
+import { LongPress } from "./LongPress.tsx";
 
 export default class Title extends StoreComponent {
   mapState(state) {
