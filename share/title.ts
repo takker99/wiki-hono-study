@@ -1,24 +1,9 @@
-import { Parser } from "./markup/parser";
+import type { Page } from "@progfay/scrapbox-parser";
 
-function renderToPlainText(node) {
-  return node.value || node.description || node.title;
-}
+export const buildTitle = (
+  { wiki, title, lines }: { wiki: string; title: string; lines: Page },
+): string => {
+  const subtitle = lines.find((line) => line.type === "title")?.text;
 
-export function buildTitle({ wiki, title, lines }) {
-  let subtitle;
-  if (lines && lines.length > 0) {
-    for (let line of lines) {
-      if (!(/https?:\/\//.test(line.value))) {
-        let nodes = Parser.parse(line.value.trim());
-        subtitle = nodes.map(renderToPlainText).join("");
-        if (subtitle) break;
-      }
-    }
-  }
-
-  if (subtitle) {
-    return `${title}: ${subtitle} - ${wiki}`;
-  } else {
-    return `${title} - ${wiki}`;
-  }
-}
+  return subtitle ? `${title}: ${subtitle} - ${wiki}` : `${title} - ${wiki}`;
+};
