@@ -1,29 +1,18 @@
-import React, { Component } from "react";
+import type { FunctionComponent } from "preact";
+import { EditTool } from "./edit-tool.tsx";
+import { Login } from "./Login.tsx";
+import { Title } from "./Title.tsx";
+import { PageDate } from "./PageDate.tsx";
+import type { Store } from "../store.ts";
 
-import EditTool from "./edit-tool";
-import Login from "./login";
-import Title from "./title";
-import PageDate from "./page-date";
-
-export default class Header extends Component {
-  static get propTypes() {
-    return {
-      store: React.PropTypes.object.isRequired,
-    };
-  }
-
-  render() {
-    const { store } = this.props;
-    return (
-      <div className="header">
-        <div className="toolbar">
-          <EditTool store={store} />
-          <Login />
-          <div className="clear" />
-        </div>
-        <Title store={store} />
-        <PageDate store={store} />
-      </div>
-    );
-  }
-}
+export const Header: FunctionComponent<{ store: Store }> = ({ store }) => (
+  <div className="header">
+    <div className="toolbar">
+      <EditTool store={store} />
+      <Login />
+      <div className="clear" />
+    </div>
+    <Title store={store} />
+    <PageDate {...store.page} />
+  </div>
+);

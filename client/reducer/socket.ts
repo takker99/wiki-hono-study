@@ -1,4 +1,4 @@
-export default function socketReducer(state = {}, action: { type: any; }) {
+export default function socketReducer(state = {}, action: { type: any }) {
   switch (action.type) {
     case "socket:connect":
       state.connecting = true;

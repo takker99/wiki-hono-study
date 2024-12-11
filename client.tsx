@@ -1,11 +1,10 @@
-import "../share/print-all-errors.ts";
-import { render } from "react-dom";
+import { render } from "preact";
 import { applyMiddleware, bindActionCreators, createStore } from "redux";
-import reducer from "./reducer/index.ts";
-import middlewares from "./middleware/index.ts";
-import * as actions from "./action.ts";
-import { App } from "./app.tsx";
-import {Line} from "./line.ts";
+import reducer from "./client/reducer/index.ts";
+import middlewares from "./client/middleware/index.ts";
+import * as actions from "./client/action.ts";
+import { App } from "./client/app.tsx";
+import { Line } from "./client/line.ts";
 
 const store = createStore(
   reducer,
@@ -23,9 +22,9 @@ const store = createStore(
   applyMiddleware(...middlewares),
 );
 
-render(<App store={store} />, document.getElementById("app"));
+render(<App store={store} />, document.getElementById("app")!);
 
-import socket from "./socket/index.ts";
+import { use as socket } from "./client/socket/index.ts";
 socket({
   store,
   action: bindActionCreators(actions, store.dispatch),

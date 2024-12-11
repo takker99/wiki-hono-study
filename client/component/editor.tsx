@@ -34,38 +34,38 @@ export const Editor = () => {
   }, [dispatch, page]);
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {
-    switch (e.keyCode) {
-      case 27: // escape
+    switch (e.key) {
+      case "Escape":
         dispatch(unsetEditline());
         break;
-      case 13: // enter
+      case "Enter":
         dispatch(insertNewLine());
         break;
-      case 40: // down
+      case "ArrowDown":
         if (e.ctrlKey) dispatch(swapLineDown());
         else if (e.shiftKey) dispatch(swapBlockDown());
         else dispatch(editlineDown());
         break;
-      case 38: // up
+      case "ArrowUp":
         if (e.ctrlKey) dispatch(swapLineUp());
         else if (e.shiftKey) dispatch(swapBlockUp());
         else dispatch(editlineUp());
         break;
-      case 78: // ctrl + N
+      case "n":
         if (e.ctrlKey) dispatch(editlineDown());
         break;
-      case 80: // ctrl + P
+      case "p":
         if (e.ctrlKey) dispatch(editlineUp());
         break;
-      case 37: // left
+      case "ArrowLeft":
         if (e.ctrlKey) dispatch(indentDecrement());
         else if (e.shiftKey) dispatch(indentBlockDecrement());
         break;
-      case 39: // right
+      case "ArrowRight":
         if (e.ctrlKey) dispatch(indentIncrement());
         else if (e.shiftKey) dispatch(indentBlockIncrement());
         break;
-      case 32: // space
+      case " ":
         if (
           e.target.selectionStart !== 0 ||
           e.target.selectionEnd !== 0
@@ -73,7 +73,7 @@ export const Editor = () => {
         e.preventDefault();
         dispatch(indentIncrement());
         break;
-      case 8: // backspace
+      case "Backspace":
         if (
           e.target.selectionStart !== 0 ||
           e.target.selectionEnd !== 0

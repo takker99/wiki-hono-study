@@ -30,9 +30,9 @@ export const LongPress: FunctionComponent<LongPressProps> = (
 
   return (
     <span
-      onMouseDown={start}
-      onMouseUp={stop}
-      onMouseOut={stop}
+      onPointerDown={start}
+      onPointerUp={stop}
+      onPointerOut={stop}
     >
       {children}
     </span>

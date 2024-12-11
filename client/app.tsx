@@ -1,38 +1,31 @@
-import StoreComponent from "./component/store-component.tsx";
-import Header from "./component/header.tsx";
-import Editor from "./component/editor.tsx";
-import PageListContainer from "./container/pagelist.tsx";
-import SocketStatus from "./component/socket-status.tsx";
+import { Header } from "./component/header.tsx";
+import { Editor } from "./component/editor.tsx";
+import PageListContainer from "./component/PageListContainer.tsx";
+import { SocketStatus } from "./component/socket-status.tsx";
 
-export class App extends StoreComponent {
-  mapState() {
-    return {};
-  }
+import type { FunctionComponent } from "preact";
+import { useCallback } from "preact/hooks";
+import { useDispatch } from "react-redux";
+import { cancelTitleEdit, unsetEditline } from "./action.ts";
+import { Store } from "./store.ts";
 
-  constructor() {
-    super();
-    this.onClick = this.onClick.bind(this);
-  }
+export const App: FunctionComponent<{ store: Store }> = ({ store }) => {
+  const dispatch = useDispatch();
 
-  onClick(e) {
-    this.action.unsetEditline();
-    this.action.cancelTitleEdit();
-  }
+  const onClick = useCallback(() => {
+    dispatch(unsetEditline());
+    dispatch(cancelTitleEdit());
+  }, [dispatch]);
 
-  render() {
-    debug("render()");
-    const { store } = this.props;
-    const socketStatus = hasDom() ? <SocketStatus store={store} /> : null;
-    return (
-      <div className="app" onClick={this.onClick}>
-        <div className="main">
-          <Header store={store} />
-          <Editor store={store} />
-          <PageListContainer store={store} />
-          {socketStatus}
-          <div className="footer" />
-        </div>
+  return (
+    <div className="app" onClick={onClick}>
+      <div className="main">
+        <Header store={store} />
+        <Editor store={store} />
+        <PageListContainer store={store} />
+        <SocketStatus connecting={store.socket.connecting} />
+        <div className="footer" />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};

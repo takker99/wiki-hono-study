@@ -1,0 +1,273 @@
+@import url("nib/normalize.css");
+@import url("railscasts.css");
+
+:root {
+  --window-width: 1000px;
+  --color-bg-base: #56777d;
+  --color-bg-select: #66878d;
+  --color-font: #fafafa;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-bg-base);
+  font: 12pt "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: var(--color-font);
+}
+
+h1 {
+  font-size: 40pt;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style: none;
+}
+
+input {
+  color: #111;
+  background-color: #eee;
+  border: none;
+  font: 1em "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+div#app, div.app {
+  height: 100%;
+  padding: 5px;
+}
+
+div.app div.main {
+  margin: 0 auto;
+  height: 100%;
+  max-width: var(--window-width);
+
+  @media (max-width: var(--window-width)) {
+    width: 100%;
+  }
+}
+
+div.header {
+  .toolbar {
+    font-size: 12pt;
+    color: #333333;
+
+    li {
+      display: inline-block;
+      margin: auto 5px;
+
+      span {
+        padding: 10px 4px 2px 4px;
+        background-color: white;
+      }
+    }
+
+    .button {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .login {
+      float: right;
+
+      img.usericon {
+        margin: 0 3px 0 0;
+      }
+    }
+
+    .edit-tool {
+      float: left;
+    }
+
+    .clear {
+      clear: both;
+    }
+  }
+
+  h1 {
+    display: inline-block;
+  }
+
+  .page-date {
+    font-size: 0.8em;
+    display: inline-block;
+    margin-left: 0.5em;
+  }
+}
+
+div.editor {
+  float: left;
+  width: 800px;
+  font-size: 12pt;
+
+  @media (max-width: var(--window-width)) {
+    width: 100%;
+  }
+
+  h3 {
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+  }
+
+  ul {
+    margin-left: 20px;
+  }
+
+  li {
+    min-height: 1.6em;
+    margin-bottom: 0.3em;
+    word-wrap: break-word;
+  }
+
+  input {
+    width: 98%;
+  }
+
+  code {
+    font-family: Monaco, serif;
+    color: #fff;
+    padding: 0.1em;
+  }
+
+  .code-block code {
+    padding: 0.1em 0.3em 0.8em 0;
+    background-color: #000;
+  }
+
+  .code-block-start code {
+    font-size: 0.7em;
+    padding: 0.1em 0.5em;
+    background-color: #7e718d;
+  }
+
+  .code-block-end code {
+    padding: 0.1em 0.3em;
+    background-color: #000;
+  }
+
+  .cli {
+    code {
+      background-color: #5c5742;
+      font-size: 0.8em;
+      padding: 0.1em 0.3em;
+    }
+
+    .prefix {
+      color: #48d1c7;
+    }
+  }
+
+  .inline-code code {
+    background-color: #000;
+    padding: 0.1em 0.3em;
+  }
+
+  a {
+    color: #fdd3b2;
+
+    &.internal {
+      background-color: #8d6b66;
+      color: #fff;
+      text-decoration: none;
+      padding: 0.1em 0.2em;
+    }
+  }
+
+  img {
+    max-width: 95%;
+
+    &.usericon {
+      margin-left: 0.2em;
+      width: 1.2em;
+      height: 1.2em;
+    }
+  }
+
+  strong {
+    text-decoration: underline;
+  }
+}
+
+div.pagelist {
+  width: 200px;
+  float: left;
+
+  @media (max-width: var(--window-width)) {
+    width: 100%;
+    margin: 0 auto;
+
+    li {
+      background-size: contain;
+      background-position: center center;
+      background-repeat: no-repeat;
+      display: inline-block;
+      width: 6em;
+      height: 6em;
+      overflow: hidden;
+      font-size: 1.2em;
+
+      &.image span {
+        background-color: #777;
+      }
+    }
+  }
+
+  li {
+    background-size: contain;
+    background-position: right center;
+    background-repeat: no-repeat;
+    min-height: 1.5em;
+    padding: 3px;
+    margin: 1px;
+    background-color: var(--color-bg-base);
+
+    &:hover, &.selected {
+      background-color: var(--color-bg-select);
+
+      span {
+        background-color: var(--color-bg-select);
+      }
+    }
+
+    a {
+      text-decoration: none;
+      color: #fff;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    span {
+      background-color: var(--color-bg-base);
+    }
+  }
+}
+
+div.socket-status {
+  font-size: 0.9em;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+
+  .connect {
+    background-color: var(--color-bg-select);
+    padding: 2px;
+    display: none;
+  }
+
+  .disconnect {
+    background-color: #cc3333;
+    padding: 2px;
+  }
+}
+
+div.footer {
+  clear: both;
+  height: 100px;
+}

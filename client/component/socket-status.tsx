@@ -1,23 +1,14 @@
-import React from "react";
-import StoreComponent from "./store-component";
-import classnames from "classnames";
+import type { FunctionComponent } from "preact";
+import type { Store } from "../store.ts";
 
-export default class SocketStatus extends StoreComponent {
-  mapState(state) {
-    return state.socket;
-  }
+export const SocketStatus: FunctionComponent<{ connecting: boolean }> = (
+  { connecting },
+) => {
+  const text = connecting ? "connecting" : "disconnected";
 
-  render() {
-    const { connecting } = this.state;
-    const className = classnames({
-      "connect": connecting,
-      "disconnect": !connecting,
-    });
-    const text = connecting ? "connecting" : "disconnected";
-    return (
-      <div className="socket-status">
-        <span className={className}>{text}</span>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="socket-status">
+      <span className={connecting ? "connect" : "disconnect"}>{text}</span>
+    </div>
+  );
+};

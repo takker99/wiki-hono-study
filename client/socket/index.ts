@@ -1,12 +1,12 @@
 import SocketIO from "socket.io-client";
-import { defaultRoute, parseRoute } from "../../share/route";
-import page from "./page";
-import pagelist from "./pagelist";
-import title from "./title";
+import { defaultRoute, parseRoute } from "../../share/route.ts";
+import page from "./page.ts";
+import pagelist from "./pagelist.ts";
+import title from "./title.ts";
 
 export const io = SocketIO();
 
-export default function use({ store, action }) {
+export const use = ({ store, action }) => {
   io.on("connect", () => {
     store.dispatch({ type: "socket:connect" });
   });
@@ -23,8 +23,8 @@ export default function use({ store, action }) {
   pagelist({ io, store, action });
   title({ io, store, action });
 
-  var popStateTimeout;
-  globalThis.addEventListener("popstate", (e) => {
+  let popStateTimeout: number | undefined;
+  globalThis.addEventListener("popstate", () => {
     clearTimeout(popStateTimeout);
     popStateTimeout = setTimeout(() => {
       action.noPushStateRoute(Object.assign({}, defaultRoute, parseRoute()));
@@ -34,4 +34,4 @@ export default function use({ store, action }) {
   io.on("connect", () => {
     action.route(Object.assign({}, defaultRoute, parseRoute()));
   });
-}
+};

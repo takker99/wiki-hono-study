@@ -15,7 +15,8 @@
     "lowlight": "npm:lowlight@^3.2.0",
     "preact": "npm:preact@10",
     "react": "npm:preact@10",
-    "react/": "npm:preact@10/"
+    "react/": "npm:preact@10/",
+    "socket.io-client": "npm:socket.io-client@^4.8.1"
   },
   "compilerOptions": {
     "lib": [
