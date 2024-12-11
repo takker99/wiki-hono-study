@@ -1,7 +1,7 @@
 import shortid from "shortid";
 import hasDom from "has-dom";
 
-export default class Line {
+export class Line {
   constructor(opts) {
     this.value = "";
     this.indent = 0;

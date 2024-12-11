@@ -1,8 +1,8 @@
-import StoreComponent from "./component/store-component.jsx";
-import Header from "./component/header";
-import Editor from "./component/editor";
-import PageListContainer from "./container/pagelist";
-import SocketStatus from "./component/socket-status";
+import StoreComponent from "./component/store-component.tsx";
+import Header from "./component/header.tsx";
+import Editor from "./component/editor.tsx";
+import PageListContainer from "./container/pagelist.tsx";
+import SocketStatus from "./component/socket-status.tsx";
 
 export class App extends StoreComponent {
   mapState() {

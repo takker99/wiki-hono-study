@@ -1,6 +1,6 @@
-import Line from "../line";
+import Line from "../line.ts";
 import shortid from "shortid";
-import { getBlock } from "../component/syntax/decorator";
+import { getBlock } from "../component/syntax/decorator.ts";
 
 const MAX_INDENT = 16;
 

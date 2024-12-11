@@ -1,4 +1,4 @@
-import { buildTitle } from "../../share/title";
+import { buildTitle } from "../../share/title.ts";
 
 export const updateTitle = (store) => (next) => (action) => {
   const result = next(action);
