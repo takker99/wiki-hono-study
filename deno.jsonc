@@ -1,0 +1,28 @@
+{
+  "tasks": {
+    "fix": "deno fmt && deno lint --fix && deno doc --lint mod.ts && deno test --doc --parallel --shuffle && deno publish --dry-run --allow-dirty",
+    "check": "deno fmt --check && deno lint && deno doc --lint **/*.ts && deno test --doc --parallel --shuffle && deno publish --dry-run",
+    "doc": "deno doc --html mod.ts"
+  },
+  "exclude": [
+    "docs",
+    "coverage"
+  ],
+  "imports": {
+    "hast-util-to-jsx-runtime": "npm:hast-util-to-jsx-runtime@^2.3.2",
+    "lowlight": "npm:lowlight@^3.2.0",
+    "preact": "npm:preact@10",
+    "react": "npm:preact@10",
+    "react/": "npm:preact@10/"
+  },
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "deno.ns"
+    ],
+    "jsx": "react-jsx",
+    "jsxImportSource": "npm:preact@10"
+  }
+}

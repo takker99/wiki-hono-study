@@ -5,8 +5,8 @@
 
 [![Circle CI](https://circleci.com/gh/shokai/semirara.svg?style=svg)](https://circleci.com/gh/shokai/semirara)
 
-
 ## Requirements
+
 - Node.js
 - Memcached
 - MongoDB
@@ -18,17 +18,14 @@
     % cp sample.env .env
     % npm install
 
-
 ## Develop
 
     % npm run watch
     % npm run start:dev
 
-
 ## Deploy
 
     % NODE_ENV=production npm start
-
 
 ## Deploy on Heroku
 

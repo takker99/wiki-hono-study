@@ -1,0 +1,32 @@
+import mongoose from "mongoose";
+mongoose.Promise = Promise;
+
+import "./user";
+import "./page";
+import process from "node:process";
+
+const url = process.env.MONGODB_URL ||
+  process.env.MONGOLAB_URI ||
+  process.env.MONGOHQ_URL ||
+  "mongodb://localhost/semirara";
+
+export default {
+  connect: function () {
+    return mongoose.connect(url);
+  },
+};
+
+export function ambiguous(query) {
+  for (let k in query) {
+    let v = query[k];
+    if (typeof v === "string") {
+      v = v.replace(/\s/g, "").split("").join(" ?"); // spaces
+      v = v.replace(/[\\\+\*\.\[\]\{\}\(\)\^\|]/g, (c) => `\\${c}`); // replace regex
+      v = v.replace(" ??", " ?\\?");
+      v = v.replace(/^\?/, "\\?");
+      v = new RegExp(`^${v}$`, "i");
+      query[k] = v;
+    }
+  }
+  return query;
+}
